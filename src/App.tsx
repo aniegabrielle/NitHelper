@@ -1,26 +1,27 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { AuthProvider } from "./AuthProvider";
+import { ThemeProvider } from "@mui/material";
+import { theme } from "./theme";
+import { routes as appRoutes } from "./utils/routes";
+import { Route, BrowserRouter, Routes } from "react-router-dom";
+import { MenuNavigation } from "./components/Menu";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
-
-export default App;
+export const App = () => {
+	return (
+		<AuthProvider>
+			<ThemeProvider theme={theme}>
+				<BrowserRouter>
+					<MenuNavigation />
+					<Routes>
+						{appRoutes.map((route) => (
+							<Route
+								key={route.key}
+								path={route.path}
+								element={<route.component />}
+							/>
+						))}
+					</Routes>
+				</BrowserRouter>
+			</ThemeProvider>
+		</AuthProvider>
+	);
+};
