@@ -6,3 +6,7 @@ WARNING: All illegal access operations will be denied in a future release
 15:35:55.439 [NamespaceSystem-akka.actor.default-dispatcher-4] INFO akka.event.slf4j.Slf4jLogger - Slf4jLogger started
 15:35:55.619 [main] INFO com.firebase.server.forge.App$ - Listening at 127.0.0.1:9000
 15:36:30.876 [NamespaceSystem-akka.actor.default-dispatcher-7] INFO com.firebase.core.namespace.NamespaceActor - projeto-firebase-maria-mussi successfully activated FBKV (SurveyIdle(0)) wait: 189ms, init: 0ms
+19:19:25.367 [Thread-0] INFO com.firebase.server.forge.App$ - Attempting graceful shutdown.
+19:19:25.378 [NamespaceSystem-akka.actor.default-dispatcher-71] INFO com.firebase.core.namespace.Terminator$Terminator - 1 actors left to terminate: projeto-firebase-maria-mussi
+19:19:25.386 [NamespaceSystem-akka.actor.default-dispatcher-72] INFO com.firebase.core.namespace.NamespaceActor - stopped namespace actor for projeto-firebase-maria-mussi
+19:19:25.390 [Thread-0] INFO com.firebase.server.forge.App$ - Graceful shutdown complete.

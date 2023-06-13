@@ -56,7 +56,7 @@ export const FormComment = ({
 				sx={{ mt: 1, width: "100%" }}
 			>
 				<Grid container spacing={2}>
-					<Grid item xs={10}>
+					<Grid item xs={9}>
 						<TextField
 							required
 							fullWidth
@@ -72,7 +72,7 @@ export const FormComment = ({
 							onChange={(e) => setComment(e.target.value)}
 						/>
 					</Grid>
-					<Grid item xs={2}>
+					<Grid item xs={3}>
 						<Button type="submit" fullWidth variant="contained">
 							Comentar
 						</Button>

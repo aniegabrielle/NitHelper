@@ -1,9 +1,11 @@
 import Button from "@mui/material/Button";
-import { AppBar, Typography, Toolbar } from "@mui/material";
+import { Typography, Box, Stack } from "@mui/material";
 import { auth } from "../utils/firebase";
-import { useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 export const MenuNavigation = () => {
+	const location = useLocation();
+
 	let navigate = useNavigate();
 
 	const handleLogout = () => {
@@ -11,25 +13,33 @@ export const MenuNavigation = () => {
 		return navigate("/");
 	};
 
+	if (location.pathname === "/cadastro" || location.pathname === "/")
+		return <Box></Box>;
+
 	return (
-		<AppBar
-			position="static"
-			color="default"
-			elevation={0}
-			sx={{ borderBottom: (theme) => `1px solid ${theme.palette.divider}` }}
+		<Stack
+			direction="column"
+			justifyContent="space-between"
+			alignItems="center"
+			height="100vh"
+			width="100%"
 		>
-			<Toolbar sx={{ flexWrap: "wrap" }}>
-				<Typography variant="h6" color="inherit" noWrap sx={{ flexGrow: 1 }}>
+			<Stack direction="column" spacing={3} width="80%" mt={3}>
+				<Typography variant="h6" color="inherit" mb={7}>
 					NitHelper
 				</Typography>
-				<Button
-					onClick={handleLogout}
-					variant="outlined"
-					sx={{ my: 1, mx: 1.5 }}
-				>
-					Sair
-				</Button>
-			</Toolbar>
-		</AppBar>
+				<Link to="/home">Feed</Link>
+				<Link to="/perfil">Perfil</Link>
+			</Stack>
+
+			<Button
+				onClick={handleLogout}
+				variant="outlined"
+				color="primary"
+				sx={{ mb: 3, width: "80%" }}
+			>
+				Sair
+			</Button>
+		</Stack>
 	);
 };

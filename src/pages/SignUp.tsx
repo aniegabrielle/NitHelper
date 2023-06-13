@@ -109,17 +109,31 @@ export const SignUp = () => {
 	return isLoading ? (
 		<CircularProgress />
 	) : (
-		<Container component="main" maxWidth="xs">
+		<Container component="main" maxWidth="sm">
 			<Grid
 				container
-				spacing={0}
 				direction="column"
 				alignItems="center"
 				justifyContent="center"
-				style={{ minHeight: "90vh" }}
+				minHeight="100vh"
+				paddingTop={2}
+				paddingBottom={2}
 			>
-				<Grid item xs={3}>
-					<Typography component="h1" variant="h5">
+				<Grid
+					item
+					md={8}
+					sx={{
+						padding: 5,
+						borderRadius: 10,
+						backgroundColor: "#F7F7F5",
+						boxShadow: "5px 5px 16px rgba(0,0,0,0.1)",
+					}}
+				>
+					<Typography
+						component="h1"
+						variant="overline"
+						sx={{ fontSize: 24, fontWeight: 600 }}
+					>
 						Cadastro
 					</Typography>
 					<Box
@@ -134,9 +148,25 @@ export const SignUp = () => {
 								required
 								label="Nome Completo"
 								inputRef={nameRef}
+								sx={{ borderRadius: 10 }}
 								startAdornment={
 									<InputAdornment position="start">
-										<PermIdentityOutlinedIcon />
+										<PermIdentityOutlinedIcon fontSize="small" />
+									</InputAdornment>
+								}
+							/>
+						</FormControl>
+
+						<FormControl fullWidth sx={{ mb: 2 }}>
+							<InputLabel>E-mail</InputLabel>
+							<OutlinedInput
+								required
+								label="E-mail"
+								inputRef={emailRef}
+								sx={{ borderRadius: 10 }}
+								startAdornment={
+									<InputAdornment position="start">
+										<EmailOutlinedIcon fontSize="small" />
 									</InputAdornment>
 								}
 							/>
@@ -151,13 +181,13 @@ export const SignUp = () => {
 									exclusive
 									onChange={handleRoleChange}
 									aria-label="Platform"
-									sx={{ mb: 1 }}
+									sx={{ mb: 1, borderRadius: 10 }}
 								>
 									<ToggleButton value="citizen" size="small">
-										Cidadao
+										Cidadão
 									</ToggleButton>
 									<ToggleButton value="publicAgent" size="small">
-										Funcionario publico
+										Funcionário público
 									</ToggleButton>
 								</ToggleButtonGroup>
 							</Stack>
@@ -165,78 +195,91 @@ export const SignUp = () => {
 
 						{userRole === "publicAgent" ? (
 							<Box>
+								<Grid container spacing={2}>
+									<Grid item xs={6}>
+										<FormControl fullWidth sx={{ mb: 2 }}>
+											<InputLabel>Cargo</InputLabel>
+											<OutlinedInput
+												required
+												label="E-mail"
+												inputRef={officeRef}
+												sx={{ borderRadius: 10 }}
+												startAdornment={
+													<InputAdornment position="start">
+														<EmailOutlinedIcon fontSize="small" />
+													</InputAdornment>
+												}
+											/>
+										</FormControl>
+									</Grid>
+									<Grid item xs={6}>
+										<FormControl fullWidth sx={{ mb: 2 }}>
+											<InputLabel>Registro</InputLabel>
+											<OutlinedInput
+												required
+												label="E-mail"
+												inputRef={registerRef}
+												sx={{ borderRadius: 10 }}
+												startAdornment={
+													<InputAdornment position="start">
+														<EmailOutlinedIcon fontSize="small" />
+													</InputAdornment>
+												}
+											/>
+										</FormControl>
+									</Grid>
+								</Grid>
 								<FormControl fullWidth sx={{ mb: 2 }}>
-									<InputLabel>Cargo</InputLabel>
+									<InputLabel>Telefone</InputLabel>
 									<OutlinedInput
 										required
-										label="E-mail"
-										inputRef={officeRef}
+										label="Telefone"
+										inputRef={phoneRef}
+										sx={{ borderRadius: 10 }}
 										startAdornment={
 											<InputAdornment position="start">
-												<EmailOutlinedIcon />
-											</InputAdornment>
-										}
-									/>
-								</FormControl>
-								<FormControl fullWidth sx={{ mb: 2 }}>
-									<InputLabel>Registro</InputLabel>
-									<OutlinedInput
-										required
-										label="E-mail"
-										inputRef={registerRef}
-										startAdornment={
-											<InputAdornment position="start">
-												<EmailOutlinedIcon />
+												<LocalPhoneOutlinedIcon fontSize="small" />
 											</InputAdornment>
 										}
 									/>
 								</FormControl>
 							</Box>
 						) : (
-							<Box>
-								<FormControl fullWidth sx={{ mb: 2 }}>
-									<InputLabel>CEP</InputLabel>
-									<OutlinedInput
-										required
-										label="CEP"
-										inputRef={zipCodeRef}
-										startAdornment={
-											<InputAdornment position="start">
-												<EmailOutlinedIcon />
-											</InputAdornment>
-										}
-									/>
-								</FormControl>
-							</Box>
+							<Grid container spacing={2}>
+								<Grid item xs={6}>
+									<FormControl fullWidth sx={{ mb: 2 }}>
+										<InputLabel>CEP</InputLabel>
+										<OutlinedInput
+											required
+											label="CEP"
+											inputRef={zipCodeRef}
+											sx={{ borderRadius: 10 }}
+											startAdornment={
+												<InputAdornment position="start">
+													<EmailOutlinedIcon fontSize="small" />
+												</InputAdornment>
+											}
+										/>
+									</FormControl>
+								</Grid>
+								<Grid item xs={6}>
+									<FormControl fullWidth sx={{ mb: 2 }}>
+										<InputLabel>Telefone</InputLabel>
+										<OutlinedInput
+											required
+											label="Telefone"
+											inputRef={phoneRef}
+											sx={{ borderRadius: 10 }}
+											startAdornment={
+												<InputAdornment position="start">
+													<LocalPhoneOutlinedIcon fontSize="small" />
+												</InputAdornment>
+											}
+										/>
+									</FormControl>
+								</Grid>
+							</Grid>
 						)}
-
-						<FormControl fullWidth sx={{ mb: 2 }}>
-							<InputLabel>E-mail</InputLabel>
-							<OutlinedInput
-								required
-								label="E-mail"
-								inputRef={emailRef}
-								startAdornment={
-									<InputAdornment position="start">
-										<EmailOutlinedIcon />
-									</InputAdornment>
-								}
-							/>
-						</FormControl>
-
-						<FormControl fullWidth sx={{ mb: 2 }}>
-							<InputLabel>Telefone</InputLabel>
-							<OutlinedInput
-								required
-								label="Telefone"
-								inputRef={phoneRef}
-								startAdornment={
-									<InputAdornment position="start">
-										<LocalPhoneOutlinedIcon />
-									</InputAdornment>
-								}
-							/>
-						</FormControl>
 
 						<FormControl fullWidth sx={{ mb: 2 }}>
 							<InputLabel>Senha</InputLabel>
@@ -244,9 +287,10 @@ export const SignUp = () => {
 								id="outlined-adornment-password"
 								type={showPassword ? "text" : "password"}
 								inputRef={passwordRef}
+								sx={{ borderRadius: 10 }}
 								startAdornment={
 									<InputAdornment position="start">
-										<LockOutlinedIcon />
+										<LockOutlinedIcon fontSize="small" />
 									</InputAdornment>
 								}
 								endAdornment={
@@ -258,9 +302,9 @@ export const SignUp = () => {
 											edge="end"
 										>
 											{showPassword ? (
-												<VisibilityOffOutlinedIcon />
+												<VisibilityOffOutlinedIcon fontSize="small" />
 											) : (
-												<RemoveRedEyeOutlinedIcon />
+												<RemoveRedEyeOutlinedIcon fontSize="small" />
 											)}
 										</IconButton>
 									</InputAdornment>
@@ -280,7 +324,7 @@ export const SignUp = () => {
 								type="submit"
 								variant="contained"
 								size="large"
-								sx={{ mt: 5, width: "80%" }}
+								sx={{ mt: 5, width: "80%", borderRadius: 10, fontWeight: 600 }}
 							>
 								Cadastrar
 							</Button>

@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { AuthContext } from "../AuthProvider";
 import { auth } from "../utils/firebase";
-import { Link, useNavigate } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 import {
 	setPersistence,
 	signInWithEmailAndPassword,
@@ -23,11 +23,14 @@ import {
 	IconButton,
 	InputAdornment,
 	InputLabel,
+	Link,
 	OutlinedInput,
 } from "@mui/material";
 
 export const Login = () => {
 	const [showPassword, setShowPassword] = useState<boolean>(false);
+	const [errorMessage, setErrorMessage] = useState<string>();
+
 	const { user } = useContext(AuthContext);
 	let navigate = useNavigate();
 
@@ -45,10 +48,13 @@ export const Login = () => {
 				signInWithEmailAndPassword(auth, String(email), String(password))
 					.then((userCredential) => {
 						const user = userCredential.user;
-						console.log(user);
 					})
 					.catch((error) => {
-						console.log(error);
+						if (error.code == "auth/wrong-password") {
+							setErrorMessage("Senha inválida");
+						} else {
+							setErrorMessage("Email ou senha invalidos, tente novamente");
+						}
 					});
 			})
 			.catch((error) => {
@@ -78,11 +84,27 @@ export const Login = () => {
 				direction="column"
 				alignItems="center"
 				justifyContent="center"
-				style={{ minHeight: "90vh" }}
+				style={{ minHeight: "100vh" }}
 			>
-				<Grid item xs={3} container display="flex" justifyContent="center">
-					<Typography component="h1" variant="h5">
-						Login
+				<Grid
+					item
+					xs={3}
+					container
+					display="flex"
+					justifyContent="center"
+					sx={{
+						padding: 5,
+						borderRadius: 10,
+						backgroundColor: "#F7F7F5",
+						boxShadow: "5px 5px 16px rgba(0,0,0,0.1)",
+					}}
+				>
+					<Typography
+						component="h1"
+						variant="overline"
+						sx={{ fontSize: 24, fontWeight: 600 }}
+					>
+						LOGIN
 					</Typography>
 					<Box
 						component="form"
@@ -96,9 +118,10 @@ export const Login = () => {
 								required
 								label="E-mail"
 								inputRef={emailRef}
+								sx={{ borderRadius: 10 }}
 								startAdornment={
 									<InputAdornment position="start">
-										<EmailOutlinedIcon />
+										<EmailOutlinedIcon fontSize="small" />
 									</InputAdornment>
 								}
 							/>
@@ -110,9 +133,10 @@ export const Login = () => {
 								id="outlined-adornment-password"
 								type={showPassword ? "text" : "password"}
 								inputRef={passwordRef}
+								sx={{ borderRadius: 10 }}
 								startAdornment={
 									<InputAdornment position="start">
-										<LockOutlinedIcon />
+										<LockOutlinedIcon fontSize="small" />
 									</InputAdornment>
 								}
 								endAdornment={
@@ -122,11 +146,12 @@ export const Login = () => {
 											onClick={handleClickShowPassword}
 											onMouseDown={handleMouseDownPassword}
 											edge="end"
+											size="small"
 										>
 											{showPassword ? (
-												<VisibilityOffOutlinedIcon />
+												<VisibilityOffOutlinedIcon fontSize="small" />
 											) : (
-												<RemoveRedEyeOutlinedIcon />
+												<RemoveRedEyeOutlinedIcon fontSize="small" />
 											)}
 										</IconButton>
 									</InputAdornment>
@@ -134,6 +159,15 @@ export const Login = () => {
 								label="Password"
 							/>
 						</FormControl>
+
+						<Typography
+							component="p"
+							variant="body2"
+							color="error"
+							align="center"
+						>
+							{errorMessage ? errorMessage : null}
+						</Typography>
 
 						<Box
 							sx={{
@@ -146,17 +180,21 @@ export const Login = () => {
 								type="submit"
 								variant="contained"
 								size="large"
-								sx={{ mt: 5, width: "80%" }}
+								sx={{ mt: 5, width: "80%", borderRadius: 10, fontWeight: 600 }}
 							>
 								Entrar
 							</Button>
 						</Box>
 					</Box>
-					<Box mt={3}>
-						<Link to="/cadastro">Clique aqui para se cadastrar</Link>
+					<Box mt={1}>
+						<Link component={RouterLink} to="/cadastro" variant="body2">
+							Clique aqui para se cadastrar
+						</Link>
 					</Box>
 				</Grid>
 			</Grid>
 		</Container>
 	);
 };
+
+// tratar erros de login/cadastro

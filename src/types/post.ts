@@ -1,6 +1,6 @@
 import { User } from "firebase/auth";
 
-type Status = "atendido" | "nao atendido";
+type Status = "atendido" | "não atendido";
 
 interface Post {
 	id: string;
