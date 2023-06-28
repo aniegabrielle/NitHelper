@@ -26,37 +26,36 @@ import {
 } from "@mui/material";
 import { useAuth } from "../AuthProvider";
 import { ref, set } from "firebase/database";
-import { Citizen, PublicAgent, UserSystem } from "../types/user";
 import { updateProfile } from "firebase/auth";
 
 export const SignUp = () => {
 	const { signUp } = useAuth();
 
-	const emailRef = useRef<HTMLInputElement>();
-	const nameRef = useRef<HTMLInputElement>();
-	const passwordRef = useRef<HTMLInputElement>();
-	const phoneRef = useRef<HTMLInputElement>();
-	const zipCodeRef = useRef<HTMLInputElement>();
-	const officeRef = useRef<HTMLInputElement>();
-	const registerRef = useRef<HTMLInputElement>();
+	const [formValues, setFormValues] = useState({
+		displayName: "",
+		email: "",
+		phoneNumber: "",
+		zipCode: "",
+		office: "",
+		register: "",
+		role: "citizen"
+	});
 
-	const [showPassword, setShowPassword] = useState<boolean>(false);
-	const [isLoading, setLoading] = useState<boolean>(false);
-	const [userRole, setUserRole] = useState<UserSystem["role"]>("citizen");
+	const passwordRef = useRef()
 
-	const registerUser = async (
-		email: string,
-		name: string,
-		password: string,
-		phone: string
-	) => {
+	const [showPassword, setShowPassword] = useState(false);
+	const [isLoading, setLoading] = useState(false);
+
+	const registerUser = async (email, name, password, phone) => {
 		setLoading(true);
+
 		await signUp(email, password).then((userCredential) => {
 			const user = userCredential.user;
 
 			updateProfile(user, {
 				displayName: name,
-			}).then(() => {});
+				phoneNumber: phone
+			})
 
 			const userCredentials = {
 				displayName: name,
@@ -65,7 +64,8 @@ export const SignUp = () => {
 				uid: user.uid,
 				reports: [],
 				comments: [],
-			} as unknown as Citizen | PublicAgent;
+				friendship: []
+			};
 
 			return set(ref(db, "/users/" + user.uid), { ...userCredentials });
 		});
@@ -74,15 +74,15 @@ export const SignUp = () => {
 		window.location.pathname = `/home`;
 	};
 
-	const writeUserData = (e: React.FormEvent<HTMLFormElement>) => {
+	const writeUserData = (e) => {
 		e.preventDefault();
-		const email = emailRef.current?.value;
-		const name = nameRef.current?.value;
+		const email = formValues.email;
+		const name = formValues.displayName;
 		const password = passwordRef.current?.value;
-		const phone = phoneRef.current?.value;
-		const zipCode = zipCodeRef.current?.value;
-		const office = officeRef.current?.value;
-		const register = registerRef.current?.value;
+		const phone = formValues.phoneNumber;
+		const zipCode = formValues.zipCode;
+		const office = formValues.office;
+		const register = formValues.register;
 
 		if (email && name && password)
 			registerUser(
@@ -95,15 +95,8 @@ export const SignUp = () => {
 
 	const handleClickShowPassword = () => setShowPassword((show) => !show);
 
-	const handleMouseDownPassword = (event: { preventDefault: () => void }) => {
+	const handleMouseDownPassword = (event) => {
 		event.preventDefault();
-	};
-
-	const handleRoleChange = (
-		e: React.MouseEvent<HTMLElement, MouseEvent>,
-		newRole: UserSystem["role"]
-	) => {
-		setUserRole(newRole);
 	};
 
 	return isLoading ? (
@@ -147,8 +140,8 @@ export const SignUp = () => {
 							<OutlinedInput
 								required
 								label="Nome Completo"
-								inputRef={nameRef}
 								sx={{ borderRadius: 10 }}
+								onChange={(e) => setFormValues({ ...formValues, displayName: e.target.value })}
 								startAdornment={
 									<InputAdornment position="start">
 										<PermIdentityOutlinedIcon fontSize="small" />
@@ -162,7 +155,7 @@ export const SignUp = () => {
 							<OutlinedInput
 								required
 								label="E-mail"
-								inputRef={emailRef}
+								onChange={(e) => setFormValues({ ...formValues, email: e.target.value })}
 								sx={{ borderRadius: 10 }}
 								startAdornment={
 									<InputAdornment position="start">
@@ -177,9 +170,9 @@ export const SignUp = () => {
 								<FormLabel>Qual seu papel para o aplicativo?</FormLabel>
 								<ToggleButtonGroup
 									color="primary"
-									value={userRole}
+									value={formValues.role}
 									exclusive
-									onChange={handleRoleChange}
+									onChange={(e) => setFormValues({ ...formValues, role: e.target.value })}
 									aria-label="Platform"
 									sx={{ mb: 1, borderRadius: 10 }}
 								>
@@ -193,7 +186,7 @@ export const SignUp = () => {
 							</Stack>
 						</FormControl>
 
-						{userRole === "publicAgent" ? (
+						{formValues.role === "publicAgent" ? (
 							<Box>
 								<Grid container spacing={2}>
 									<Grid item xs={6}>
@@ -201,8 +194,8 @@ export const SignUp = () => {
 											<InputLabel>Cargo</InputLabel>
 											<OutlinedInput
 												required
-												label="E-mail"
-												inputRef={officeRef}
+												label="Cargo"
+												onChange={(e) => setFormValues({ ...formValues, office: e.target.value })}
 												sx={{ borderRadius: 10 }}
 												startAdornment={
 													<InputAdornment position="start">
@@ -217,8 +210,8 @@ export const SignUp = () => {
 											<InputLabel>Registro</InputLabel>
 											<OutlinedInput
 												required
-												label="E-mail"
-												inputRef={registerRef}
+												label="Registro"
+												onChange={(e) => setFormValues({ ...formValues, register: e.target.value })}
 												sx={{ borderRadius: 10 }}
 												startAdornment={
 													<InputAdornment position="start">
@@ -234,7 +227,7 @@ export const SignUp = () => {
 									<OutlinedInput
 										required
 										label="Telefone"
-										inputRef={phoneRef}
+										onChange={(e) => setFormValues({ ...formValues, phoneNumber: e.target.value })}
 										sx={{ borderRadius: 10 }}
 										startAdornment={
 											<InputAdornment position="start">
@@ -252,7 +245,7 @@ export const SignUp = () => {
 										<OutlinedInput
 											required
 											label="CEP"
-											inputRef={zipCodeRef}
+											onChange={(e) => setFormValues({ ...formValues, zipCode: e.target.value })}
 											sx={{ borderRadius: 10 }}
 											startAdornment={
 												<InputAdornment position="start">
@@ -268,7 +261,7 @@ export const SignUp = () => {
 										<OutlinedInput
 											required
 											label="Telefone"
-											inputRef={phoneRef}
+											onChange={(e) => setFormValues({ ...formValues, phoneNumber: e.target.value })}
 											sx={{ borderRadius: 10 }}
 											startAdornment={
 												<InputAdornment position="start">

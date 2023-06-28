@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { AuthContext } from "../AuthProvider";
+import { useAuth } from "../AuthProvider";
 import { auth } from "../utils/firebase";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import {
@@ -28,16 +28,16 @@ import {
 } from "@mui/material";
 
 export const Login = () => {
-	const [showPassword, setShowPassword] = useState<boolean>(false);
-	const [errorMessage, setErrorMessage] = useState<string>();
+	const [showPassword, setShowPassword] = useState(false);
+	const [errorMessage, setErrorMessage] = useState();
 
-	const { user } = useContext(AuthContext);
+	const { user, login } = useAuth();
 	let navigate = useNavigate();
 
-	const emailRef = useRef<HTMLInputElement>();
-	const passwordRef = useRef<HTMLInputElement>();
+	const emailRef = useRef();
+	const passwordRef = useRef();
 
-	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+	const handleSubmit = async (e) => {
 		e.preventDefault();
 
 		const email = emailRef.current?.value;
@@ -45,12 +45,21 @@ export const Login = () => {
 
 		await setPersistence(auth, browserSessionPersistence)
 			.then(() => {
+				login(String(email), String(password))
+					.then((userCredential) => console.log(userCredential.user))
+					.catch((error) => {
+						if (error.code === "auth/wrong-password") {
+							setErrorMessage("Senha inválida");
+						} else {
+							setErrorMessage("Email ou senha invalidos, tente novamente");
+						}
+					});
 				signInWithEmailAndPassword(auth, String(email), String(password))
 					.then((userCredential) => {
 						const user = userCredential.user;
 					})
 					.catch((error) => {
-						if (error.code == "auth/wrong-password") {
+						if (error.code === "auth/wrong-password") {
 							setErrorMessage("Senha inválida");
 						} else {
 							setErrorMessage("Email ou senha invalidos, tente novamente");
@@ -66,7 +75,7 @@ export const Login = () => {
 
 	const handleClickShowPassword = () => setShowPassword((show) => !show);
 
-	const handleMouseDownPassword = (event: { preventDefault: () => void }) => {
+	const handleMouseDownPassword = (event) => {
 		event.preventDefault();
 	};
 

@@ -3,27 +3,20 @@ import {
 	Button,
 	FormControl,
 	Grid,
-	InputLabel,
-	Modal,
 	TextField,
 } from "@mui/material";
-import { child, push, ref, set, update } from "firebase/database";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import { child, push, ref, update } from "firebase/database";
+import React, { useRef, useState } from "react";
 import { db } from "../utils/firebase";
-import { AuthContext } from "../AuthProvider";
-import { Comment } from "../types/post";
+import { useAuth } from "../AuthProvider";
 
-export const FormComment = ({
-	currentReportId,
-}: {
-	currentReportId: string;
-}) => {
-	const { user } = useContext(AuthContext);
-	const [comment, setComment] = useState<string>();
+export const FormComment = ({ currentReportId }) => {
+	const { currentUser } = useAuth();
+	const [comment, setComment] = useState();
 
-	const postCommentRef = useRef<HTMLInputElement>();
+	const postCommentRef = useRef();
 
-	function writeCommentData(e: React.FormEvent<HTMLFormElement>) {
+	function writeCommentData(e) {
 		e.preventDefault();
 
 		const data = {
@@ -31,14 +24,14 @@ export const FormComment = ({
 			createdAt: new Date().toLocaleString(),
 			reportId: currentReportId,
 			user: {
-				id: user?.uid,
-				name: user?.displayName,
+				id: currentUser?.uid,
+				name: currentUser?.displayName,
 			},
-		} as unknown as Comment;
+		};
 
 		let newCommentKey = push(child(ref(db), "comments")).key;
 
-		const updates: any = {};
+		const updates = {};
 		updates["/comments/" + newCommentKey] = data;
 		updates["/reports/" + currentReportId + "/comments/" + newCommentKey] =
 			data;

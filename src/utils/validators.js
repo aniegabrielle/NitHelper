@@ -1,12 +1,9 @@
-const isEmpty = (param: string) => {
+const isEmpty = (param) => {
 	if (param.trim() === "") return true;
 	else return false;
 };
 
-export const validateLoginData = (data: {
-	email: string;
-	password: string;
-}) => {
+export const validateLoginData = (data) => {
 	let errors = { email: "", password: "" };
 
 	if (isEmpty(data.email)) errors.email = "Must not be empty";
@@ -17,23 +14,14 @@ export const validateLoginData = (data: {
 	};
 };
 
-const isEmail = (email: string) => {
+const isEmail = (email) => {
 	const emailRegEx =
 		/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 	if (email.match(emailRegEx)) return true;
 	else return false;
 };
 
-export const validateSignUpData = (data: {
-	email: string;
-	firstName: string;
-	lastName: string;
-	phoneNumber: string;
-	country: string;
-	password: string;
-	confirmPassword: any;
-	username: string;
-}) => {
+export const validateSignUpData = (data) => {
 	let errors = {
 		email: "",
 		firstName: "",

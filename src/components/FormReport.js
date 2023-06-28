@@ -1,4 +1,4 @@
-import React, { useContext, useRef } from "react";
+import React, { useState } from "react";
 
 import {
 	Box,
@@ -11,38 +11,49 @@ import {
 	TextField,
 	Button,
 } from "@mui/material";
-import { Report } from "../types/post";
 import { child, push, ref, update } from "firebase/database";
-import { AuthContext } from "../AuthProvider";
+import { useAuth } from "../AuthProvider";
 import { db } from "../utils/firebase";
+import { useNavigate } from "react-router-dom";
 
-export const FormReport = ({}) => {
-	const { user } = useContext(AuthContext);
+export const FormReport = () => {
+	const { currentUser } = useAuth();
+	const navigate = useNavigate();
 
-	const addressReportRef = useRef<HTMLInputElement>();
-	const descriptionReportRef = useRef<HTMLInputElement>();
+	const [formValues, setFormValues] = useState({
+		address: "",
+		description: "",
+		type: ""
+	});
 
-	const [reportType, setReportType] = React.useState("");
-
-	function writeReportData(e: React.FormEvent<HTMLFormElement>) {
+	function writeReportData(e) {
 		e.preventDefault();
+
 		const data = {
-			type: reportType,
-			address: addressReportRef.current?.value,
-			description: descriptionReportRef.current?.value,
-			status: "não atendido",
+			type: formValues.type,
+			address: formValues.address,
+			description: formValues.description,
+			status: "Não atendido",
 			createdAt: new Date().toLocaleString(),
 			user: {
-				id: user?.uid,
-				name: user?.displayName,
+				id: currentUser.uid,
+				name: currentUser.displayName,
 			},
-		} as unknown as Report;
+		};
 
 		let newReportKey = push(child(ref(db), "reports")).key;
 
-		const updates: any = {};
+		const updates = {};
 		updates["/reports/" + newReportKey] = data;
-		updates["/users/" + user?.uid + "/reports/" + newReportKey] = data;
+		updates["/users/" + currentUser.uid + "/reports/" + newReportKey] = data;
+
+		setFormValues({
+			address: "",
+			description: "",
+			type: ""
+		})
+
+		navigate(0);
 
 		return update(ref(db), updates);
 	}
@@ -56,18 +67,18 @@ export const FormReport = ({}) => {
 							<Grid item xs={6}>
 								<InputLabel>Tipo de denúncia</InputLabel>
 								<Select
-									value={reportType}
+									value={formValues.type}
 									label="Tipo de denúncia"
-									onChange={(e) => setReportType(e.target.value)}
+									onChange={(e) => setFormValues({ ...formValues, type: e.target.value })}
 									sx={{ width: "100%" }}
 									size="small"
 								>
-									<MenuItem value={"iluminacao"}>Iluminação</MenuItem>
-									<MenuItem value={"transporte"}>Transporte</MenuItem>
-									<MenuItem value={"Condicoes de vias publicas"}>
+									<MenuItem value={"Iluminação"}>Iluminação</MenuItem>
+									<MenuItem value={"Transporte"}>Transporte</MenuItem>
+									<MenuItem value={"Condições de vias públicas"}>
 										Condições de vias públicas
 									</MenuItem>
-									<MenuItem value={"outros"}>Outros</MenuItem>
+									<MenuItem value={"Outros"}>Outros</MenuItem>
 								</Select>
 							</Grid>
 							<Grid item xs={6}>
@@ -78,8 +89,8 @@ export const FormReport = ({}) => {
 									label="Endereço da denúncia"
 									type="address"
 									id="address_report"
-									inputRef={addressReportRef}
 									size="small"
+									onChange={(e) => setFormValues({ ...formValues, address: e.target.value })}
 								/>
 							</Grid>
 						</Grid>
@@ -92,15 +103,19 @@ export const FormReport = ({}) => {
 						label="Descricao da denuncia"
 						type="description"
 						id="description_report"
-						inputRef={descriptionReportRef}
 						multiline
 						rows={2}
 						maxRows={4}
+						onChange={(e) => setFormValues({ ...formValues, description: e.target.value })}
 					/>
 					<Box
 						sx={{ display: "flex", justifyContent: "flex-end", width: "100%" }}
 					>
-						<Button type="submit" variant="contained" sx={{ mt: 1 }}>
+						<Button
+							type="submit"
+							variant="contained"
+							sx={{ mt: 1, borderRadius: 10 }}
+						>
 							Registrar Problema
 						</Button>
 					</Box>

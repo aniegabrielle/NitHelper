@@ -13,8 +13,10 @@ export const MenuNavigation = () => {
 		return navigate("/");
 	};
 
-	if (location.pathname === "/cadastro" || location.pathname === "/")
-		return <Box></Box>;
+	const itsLoginAndSignIn =
+		location.pathname === "/cadastro" || location.pathname === "/";
+
+	if (itsLoginAndSignIn) return <Box></Box>;
 
 	return (
 		<Stack

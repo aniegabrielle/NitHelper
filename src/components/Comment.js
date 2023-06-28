@@ -1,10 +1,9 @@
 import React from "react";
 
 import { Typography, Box, Grid } from "@mui/material";
-import { Comment } from "../types/post";
 import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
 
-export const CommentReport = ({ item }: { item: Comment }) => {
+export const CommentReport = ({ item }) => {
 	return (
 		<Box mt={2} mb={4}>
 			<Grid container spacing={2}>

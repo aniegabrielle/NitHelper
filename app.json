@@ -1,0 +1,21 @@
+{
+  "expo": {
+    "extra": {
+      "eas": {
+        "projectId": "1dd4014c-2070-452c-947a-1a631eabb971"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "sdkVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/1dd4014c-2070-452c-947a-1a631eabb971"
+    },
+    "android": {
+      "package": "com.mariaclaramussi.nithelper"
+    },
+    "ios": {
+      "bundleIdentifier": "com.mariaclaramussi.nithelper"
+    }
+  }
+}

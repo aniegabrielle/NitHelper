@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Container from "@mui/material/Container";
 import {
 	Box,
@@ -10,26 +10,21 @@ import {
 	Collapse,
 	Grid,
 	IconButton,
-	IconButtonProps,
 	Stack,
 	Typography,
 	styled,
 } from "@mui/material";
-import { onValue, ref } from "firebase/database";
+import { onValue, ref, get, child, update, push } from "firebase/database";
 import { db } from "../utils/firebase";
 import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../AuthProvider";
-import { Report } from "../types/post";
+import { useAuth } from "../AuthProvider";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { FormComment } from "../components/FormComment";
 import { CommentReport } from "../components/Comment";
 import Face6Icon from "@mui/icons-material/Face6";
 import { FormReport } from "../components/FormReport";
-interface ExpandMoreProps extends IconButtonProps {
-	expand: boolean;
-}
 
-const ExpandMore = styled((props: ExpandMoreProps) => {
+const ExpandMore = styled((props) => {
 	const { expand, ...other } = props;
 	return <IconButton {...other} />;
 })(({ theme, expand }) => ({
@@ -41,17 +36,17 @@ const ExpandMore = styled((props: ExpandMoreProps) => {
 }));
 
 export const Home = () => {
-	const { user } = useContext(AuthContext);
-
+	const { currentUser } = useAuth();
 	let navigate = useNavigate();
 
-	const [reports, setReports] = React.useState<Report[]>([]);
+	const [reports, setReports] = React.useState([]);
 
-	const [currentReportId, setCurrentReportId] = useState<string>("");
+	const [currentReportId, setCurrentReportId] = useState("");
 
-	const [expanded, setExpanded] = useState<number | null>(null);
+	const [expanded, setExpanded] = useState(null);
 
-	const handleExpandClick = (index: number, id: string) => {
+
+	const handleExpandClick = (index, id) => {
 		if (expanded !== null) {
 			setExpanded(null);
 		} else {
@@ -61,11 +56,58 @@ export const Home = () => {
 		setCurrentReportId(id);
 	};
 
+	const handleFollowUser = (userId) => {
+		const updates = {}
+
+		get(child(ref(db), `users/${currentUser.uid}/friendships`)).then((snapshot) => {
+			if (snapshot.exists()) {
+				const objectSnapshot = snapshot.val()
+				const list = Object.values(objectSnapshot)
+				const key = list.length
+
+				if (!list.includes(userId)) {
+					updates[`users/${currentUser.uid}/friendships/${key}`] = userId
+					update(ref(db), updates);
+				}
+			} else {
+				updates[`users/${currentUser.uid}/friendships/0`] = userId
+				update(ref(db), updates);
+			}
+		})
+
+		get(child(ref(db), `users/${userId}/friendships`)).then((snapshot) => {
+			if (snapshot.exists()) {
+				const objectSnapshot = snapshot.val()
+				const list = Object.values(objectSnapshot)
+				const key = list.length
+
+				if (!list.includes(currentUser.uid)) {
+					updates[`users/${userId}/friendships/${key}`] = currentUser.uid
+					update(ref(db), updates);
+				}
+			} else {
+				updates[`users/${userId}/friendships/0`] = currentUser.uid
+				update(ref(db), updates);
+			}
+		})
+	}
+
+	function checkFriendship(userId) {
+		const reportRef = ref((db), `users/${currentUser.uid}/friendships`);
+
+		return onValue(reportRef, (snapshot) => {
+			const objectSnapshot = snapshot.val()
+			const list = Object.values(objectSnapshot)
+
+			return list.includes(userId)
+		})
+	}
+
 	useEffect(() => {
-		if (user === null) {
+		if (currentUser === null) {
 			return navigate("/");
 		}
-	}, [user, navigate]);
+	}, [currentUser, navigate]);
 
 	useEffect(() => {
 		const reportRef = ref(db, "reports");
@@ -89,7 +131,7 @@ export const Home = () => {
 
 			<Stack gap={"1rem"} mt={6} mb={10}>
 				{reports.map((item, index) => (
-					<Card key={index} sx={{ minWidth: 275, borderRadius: 3 }}>
+					< Card key={index} sx={{ minWidth: 275, borderRadius: 3 }}>
 						<CardContent>
 							<Grid container spacing={3}>
 								<Grid item xs={8}>
@@ -110,6 +152,10 @@ export const Home = () => {
 										<Typography sx={{ fontSize: "24px", fontWeight: "bold" }}>
 											{item.user?.name ? item.user.name : null}
 										</Typography>
+
+										{/* {checkFriendship(item.user.id) ? <Typography>Seguindo</Typography> : <Typography>Seguir</Typography>} */}
+
+										<Button onClick={() => handleFollowUser(item.user.id)}>Seguir</Button>
 									</Stack>
 								</Grid>
 								<Grid
@@ -170,7 +216,7 @@ export const Home = () => {
 						<Collapse in={expanded === index} timeout="auto" unmountOnExit>
 							<CardContent>
 								{item.comments ? (
-									Object.keys(item.comments).map((key: any) => {
+									Object.keys(item.comments).map((key) => {
 										return <CommentReport item={item.comments[key]} />;
 									})
 								) : (
@@ -185,6 +231,6 @@ export const Home = () => {
 					</Card>
 				))}
 			</Stack>
-		</Container>
+		</Container >
 	);
 };

@@ -27,8 +27,12 @@ export const App = () => {
 						</Grid>
 						<Grid
 							item
-							xs={10}
-							sx={{ backgroundColor: "#F2F2F2", marginLeft: "200px" }}
+							sx={{
+								backgroundColor: "#F2F2F2",
+								marginLeft: "200px",
+								minHeight: "100vh",
+								width: "100%",
+							}}
 						>
 							<Routes>
 								{appRoutes.map((route) => (
